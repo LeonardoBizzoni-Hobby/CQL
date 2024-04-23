@@ -1,24 +1,61 @@
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 
+#include "token_type.h"
 #include "tokenizer.h"
 
-Token *get_token(char *command) {
-  u64 i = 0;
-  skip_whitespace(&i, command);
+Token *get_token(char **command) {
+  u64 start = 0;
+  skip_whitespace(&start, *command);
 
-  char ch = advance(&i, command);
+  char ch = advance(&start, *command);
   if (is_digit(ch)) {
-    return make_number_token(&i, command);
+    return make_number_token(&start, *command);
   } else if ((ch >= 'a' && ch <= 'z') || (ch >= 'A' && ch <= 'Z')) {
-    return make_identifier_token(&i, command);
+    return make_identifier_token(&start, *command);
   }
 
-  return 0;
+  Token *token = 0;
+  switch (ch) {
+    case '(': {
+      token = make_token(LEFT_PAREN);
+    } break;
+    case ')': {
+      token = make_token(RIGHT_PAREN);
+    } break;
+    case ',': {
+      token = make_token(COMMA);
+    } break;
+    case '"': {
+      token = make_token(STRING);
+
+      u64 curr = start;
+      while ((*command)[curr] != 0 && (*command)[curr] != '"') {
+	printf("%i - %c\n", (*command)[curr], (*command)[curr]);
+        advance(&curr, *command);
+      }
+
+      token->lexeme.str = get_substr(*command, start, curr);
+      advance(&curr, *command);
+
+      start = curr;
+    } break;
+  }
+
+  *command += start;
+  return token;
+}
+
+Token *make_token(TokenType type) {
+  Token *token = malloc(sizeof(Token));
+  token->type = type;
+
+  return token;
 }
 
 Token *make_number_token(u64 *idx, char *command) {
-  Token *token = malloc(sizeof(Token));
+  Token *token = 0;
   u64 start = *idx - 1;
 
   while (is_digit(command[*idx])) {
@@ -26,23 +63,19 @@ Token *make_number_token(u64 *idx, char *command) {
   }
 
   if (command[*idx] == '.' && is_digit(command[*idx + 1])) {
-    token->type = REAL;
-
     advance(idx, command);
     while (is_digit(command[*idx])) {
       advance(idx, command);
     }
 
+    token = make_token(REAL);
     token->lexeme.real = atof(get_substr(command, start, *idx));
-    return token;
   } else {
-    token->type = INTEGER;
+    token = make_token(INTEGER);
     token->lexeme.integer = atoi(get_substr(command, start, *idx));
-
-    return token;
   }
 
-  return 0;
+  return token;
 }
 
 /* TODO: scan identifiers and detect keywords */

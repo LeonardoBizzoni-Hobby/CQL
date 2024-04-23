@@ -5,6 +5,7 @@ typedef enum {
   SELECT,
   INSERT,
   CREATE,
+  ALTER,
   DELETE,
 
   INTO,

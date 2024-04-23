@@ -3,8 +3,9 @@
 
 #include "token.h"
 
-Token *get_token(char *);
+Token *get_token(char **);
 
+Token *make_token(TokenType);
 Token *make_number_token(u64 *, char *);
 Token *make_identifier_token(u64 *, char *);
 

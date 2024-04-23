@@ -8,8 +8,8 @@ typedef struct {
   TokenType type;
 
   union {
-    const char *identifier;
-    const char *str;
+    char *identifier;
+    char *str;
     u64 integer;
     f64 real;
   } lexeme;
