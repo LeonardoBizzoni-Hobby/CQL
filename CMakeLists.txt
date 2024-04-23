@@ -32,5 +32,6 @@ message(STATUS "Build type: ${CMAKE_BUILD_TYPE}")
 
 add_executable(${PROJECT_NAME} ${PROJECT_SOURCE_DIR}/src/main.c
                                ${PROJECT_SOURCE_DIR}/src/metacommand/metacommand.c
+                               ${PROJECT_SOURCE_DIR}/src/statements/tokenizer.c
                                ${PROJECT_SOURCE_DIR}/src/statements/parser.c
                                ${PROJECT_SOURCE_DIR}/src/runner/runner.c)

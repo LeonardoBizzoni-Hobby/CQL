@@ -12,13 +12,7 @@
 int main(void) {
   while (1) {
     printf("λ> ");
-
     char *command = read_command();
-    if (!command) {
-      fprintf(stderr, "Memory allocation for CQL command failed.");
-      free(command);
-      exit(EXIT_FAILURE);
-    }
 
     if (command[0] == '.') {
       switch (execute_metacommand(command)) {
@@ -32,7 +26,7 @@ int main(void) {
 
       switch (parse_statement(&stmt, command)) {
       case (STMT_PARSE_OK): {
-	execute_statement(&stmt);
+	/* execute_statement(&stmt); */
 	printf("Executed.\n");
       } break;
       case (STMT_PARSE_UNRECOGNIZED): {

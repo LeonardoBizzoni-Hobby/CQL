@@ -4,6 +4,7 @@
 typedef enum {
   STMT_SELECT,
   STMT_INSERT,
+  STMT_CREATE,
   STMT_DELETE,
 } StatementType;
 
