@@ -13,7 +13,7 @@ Token *get_token(char **command) {
   char ch = advance(&start, *command);
   if (is_digit(ch)) {
     token = make_number_token(&start, *command);
-  } else if ((ch >= 'a' && ch <= 'z') || (ch >= 'A' && ch <= 'Z')) {
+  } else if (is_alphabetic(ch)) {
     token = make_identifier_token(&start, *command);
   } else {
     switch (ch) {
@@ -79,8 +79,20 @@ Token *make_number_token(u64 *idx, char *command) {
   return token;
 }
 
-/* TODO: scan identifiers and detect keywords */
-Token *make_identifier_token(u64 *idx, char *command) { return 0; }
+/* TODO: check for keywords */
+Token *make_identifier_token(u64 *idx, char *command) {
+  Token *token = 0;
+  u64 start = *idx - 1;
+
+  while (is_alphanumeric(command[*idx])) {
+    advance(idx, command);
+  }
+
+  token = make_token(IDENTIFIER);
+  token->lexeme.identifier = get_substr(command, start, *idx);
+
+  return token;
+}
 
 char advance(u64 *idx, const char *command) {
   if (!command[*idx]) {
@@ -106,6 +118,12 @@ void skip_whitespace(u64 *idx, const char *command) {
 }
 
 bool is_digit(char ch) { return ch >= '0' && ch <= '9'; }
+
+bool is_alphabetic(char ch) {
+  return ch >= 'a' && ch <= 'z' || ch >= 'A' && ch <= 'Z';
+}
+
+bool is_alphanumeric(char ch) { return is_alphabetic(ch) || is_digit(ch); }
 
 char *get_substr(const char *command, u64 start, u64 end) {
   char *substr = malloc(sizeof(char) * (end - start + 1));

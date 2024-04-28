@@ -1,4 +1,5 @@
 #include <gtest/gtest.h>
+#include <math.h>
 
 extern "C" {
   #include <string.h>
@@ -57,4 +58,18 @@ TEST(Tokenizer, ValidString) {
 TEST(Tokenizer, InvalidString) {
   const char *command = "\"Hello, World";
   ASSERT_EQ(get_token((char **)&command), (void *)0);
+}
+
+TEST(Tokenizer, IdentifierScanning) {
+  const char *command = "Hello, World";
+  Token *found = get_token((char **)&command);
+
+  ASSERT_EQ(found->type, IDENTIFIER);
+  ASSERT_TRUE(!strcmp(found->lexeme.identifier, "Hello"));
+
+  ASSERT_EQ(get_token((char **)&command)->type, COMMA);
+
+  found = get_token((char **)&command);
+  ASSERT_EQ(found->type, IDENTIFIER);
+  ASSERT_TRUE(!strcmp(found->lexeme.identifier, "World"));
 }
