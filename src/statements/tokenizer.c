@@ -7,17 +7,16 @@
 
 Token *get_token(char **command) {
   u64 start = 0;
+  Token *token = 0;
   skip_whitespace(&start, *command);
 
   char ch = advance(&start, *command);
   if (is_digit(ch)) {
-    return make_number_token(&start, *command);
+    token = make_number_token(&start, *command);
   } else if ((ch >= 'a' && ch <= 'z') || (ch >= 'A' && ch <= 'Z')) {
-    return make_identifier_token(&start, *command);
-  }
-
-  Token *token = 0;
-  switch (ch) {
+    token = make_identifier_token(&start, *command);
+  } else {
+    switch (ch) {
     case '(': {
       token = make_token(LEFT_PAREN);
     } break;
@@ -30,18 +29,19 @@ Token *get_token(char **command) {
     case '"': {
       u64 curr = start;
       while ((*command)[curr] != 0 && (*command)[curr] != '"') {
-	printf("%i - %c\n", (*command)[curr], (*command)[curr]);
+        printf("%i - %c\n", (*command)[curr], (*command)[curr]);
         advance(&curr, *command);
       }
 
       if ((*command)[curr] == '"') {
-	token = make_token(STRING);
+        token = make_token(STRING);
         token->lexeme.str = get_substr(*command, start, curr);
         advance(&curr, *command);
       }
 
       start = curr;
     } break;
+    }
   }
 
   *command += start;
