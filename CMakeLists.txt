@@ -30,8 +30,16 @@ set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${CMAKE_CXX_FLAGS_${CMAKE_BUILD_TYPE}}")
 message(STATUS "Build type: ${CMAKE_BUILD_TYPE}")
 # ==============================================================================
 
-add_executable(${PROJECT_NAME} ${PROJECT_SOURCE_DIR}/src/main.c
+set(source_list ${PROJECT_SOURCE_DIR}/src/main.c
                                ${PROJECT_SOURCE_DIR}/src/metacommand/metacommand.c
                                ${PROJECT_SOURCE_DIR}/src/statements/tokenizer.c
                                ${PROJECT_SOURCE_DIR}/src/statements/parser.c
                                ${PROJECT_SOURCE_DIR}/src/runner/runner.c)
+
+add_executable(${PROJECT_NAME} ${source_list})
+
+add_library(${PROJECT_NAME}-lib SHARED ${source_list})
+target_include_directories(${PROJECT_NAME}-lib PUBLIC "${PROJECT_SOURCE_DIR}/src")
+
+include(CTest)
+add_subdirectory(test)

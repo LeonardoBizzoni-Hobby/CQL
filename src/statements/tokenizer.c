@@ -28,16 +28,17 @@ Token *get_token(char **command) {
       token = make_token(COMMA);
     } break;
     case '"': {
-      token = make_token(STRING);
-
       u64 curr = start;
       while ((*command)[curr] != 0 && (*command)[curr] != '"') {
 	printf("%i - %c\n", (*command)[curr], (*command)[curr]);
         advance(&curr, *command);
       }
 
-      token->lexeme.str = get_substr(*command, start, curr);
-      advance(&curr, *command);
+      if ((*command)[curr] == '"') {
+	token = make_token(STRING);
+        token->lexeme.str = get_substr(*command, start, curr);
+        advance(&curr, *command);
+      }
 
       start = curr;
     } break;
