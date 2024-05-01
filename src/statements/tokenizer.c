@@ -79,7 +79,6 @@ Token *make_number_token(u64 *idx, char *command) {
   return token;
 }
 
-/* TODO: check for keywords */
 Token *make_identifier_token(u64 *idx, char *command) {
   Token *token = 0;
   u64 start = *idx - 1;
@@ -88,10 +87,61 @@ Token *make_identifier_token(u64 *idx, char *command) {
     advance(idx, command);
   }
 
-  token = make_token(IDENTIFIER);
-  token->lexeme.identifier = get_substr(command, start, *idx);
+  char *lexeme = get_substr(command, start, *idx);
+  token = make_token(typeof_identifier(lexeme));
+  token->lexeme.identifier = lexeme;
 
   return token;
+}
+
+TokenType typeof_identifier(const char *lexeme) {
+  switch (lexeme[0]) {
+  case 'a': {
+    if (compare_lexeme(1, 4, lexeme, "alter")) {
+      return ALTER;
+    }
+  } break;
+  case 'c': {
+    if (compare_lexeme(1, 5, lexeme, "create")) {
+      return CREATE;
+    }
+  } break;
+  case 'd': {
+    if (compare_lexeme(1, 5, lexeme, "delete")) {
+      return DELETE;
+    }
+  } break;
+  case 'i': {
+    switch (lexeme[1]) {
+    case 'n': {
+      switch (lexeme[2]) {
+      case 's': {
+        if (compare_lexeme(3, 3, lexeme, "insert")) {
+          return INSERT;
+        }
+      } break;
+      case 't': {
+        if (compare_lexeme(3, 1, lexeme, "into")) {
+          return INTO;
+        }
+      } break;
+      }
+    } break;
+    }
+  } break;
+  case 's': {
+    if (compare_lexeme(1, 5, lexeme, "select")) {
+      return SELECT;
+    }
+  }
+  }
+
+  return IDENTIFIER;
+}
+
+bool compare_lexeme(u8 start, u8 ends_in, const char *found, const char *wanted) {
+  return !strncmp(found + start, wanted + start, ends_in) &&
+         found[start + ends_in] == 0;
 }
 
 char advance(u64 *idx, const char *command) {
@@ -120,7 +170,7 @@ void skip_whitespace(u64 *idx, const char *command) {
 bool is_digit(char ch) { return ch >= '0' && ch <= '9'; }
 
 bool is_alphabetic(char ch) {
-  return ch >= 'a' && ch <= 'z' || ch >= 'A' && ch <= 'Z';
+  return ch >= 'a' && ch <= 'z' || ch >= 'A' && ch <= 'Z' || ch == '_';
 }
 
 bool is_alphanumeric(char ch) { return is_alphabetic(ch) || is_digit(ch); }

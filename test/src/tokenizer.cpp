@@ -73,3 +73,39 @@ TEST(Tokenizer, IdentifierScanning) {
   ASSERT_EQ(found->type, IDENTIFIER);
   ASSERT_TRUE(!strcmp(found->lexeme.identifier, "World"));
 }
+
+TEST(Tokenizer, KeywordRecognition) {
+  const char *command = "alter creat create delete insert into into_ select";
+  Token *found = get_token((char **)&command);
+
+  ASSERT_EQ(found->type, ALTER);
+  ASSERT_TRUE(!strcmp(found->lexeme.identifier, "alter"));
+
+  found = get_token((char **)&command);
+  ASSERT_EQ(found->type, IDENTIFIER);
+  ASSERT_TRUE(!strcmp(found->lexeme.identifier, "creat"));
+
+  found = get_token((char **)&command);
+  ASSERT_EQ(found->type, CREATE);
+  ASSERT_TRUE(!strcmp(found->lexeme.identifier, "create"));
+
+  found = get_token((char **)&command);
+  ASSERT_EQ(found->type, DELETE);
+  ASSERT_TRUE(!strcmp(found->lexeme.identifier, "delete"));
+
+  found = get_token((char **)&command);
+  ASSERT_EQ(found->type, INSERT);
+  ASSERT_TRUE(!strcmp(found->lexeme.identifier, "insert"));
+
+  found = get_token((char **)&command);
+  ASSERT_EQ(found->type, INTO);
+  ASSERT_TRUE(!strcmp(found->lexeme.identifier, "into"));
+
+  found = get_token((char **)&command);
+  ASSERT_EQ(found->type, IDENTIFIER);
+  ASSERT_TRUE(!strcmp(found->lexeme.identifier, "into_"));
+
+  found = get_token((char **)&command);
+  ASSERT_EQ(found->type, SELECT);
+  ASSERT_TRUE(!strcmp(found->lexeme.identifier, "select"));
+}

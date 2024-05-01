@@ -16,7 +16,5 @@ StmtParseResult parse_statement(Statement *stmt, char *command) {
     printf("String token found: %s\n", token->lexeme.str);
   }
 
-  printf("Rest of command: %s\n", command);
-
   return STMT_PARSE_OK;
 }
