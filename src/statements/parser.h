@@ -5,6 +5,7 @@
 
 typedef enum {
   STMT_PARSE_OK,
+  STMT_PARSE_INVALID,
   STMT_PARSE_UNRECOGNIZED,
 } StmtParseResult;
 

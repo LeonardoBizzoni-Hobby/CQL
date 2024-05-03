@@ -2,11 +2,11 @@
 #define CQL_TOKEN_TYPE_H
 
 typedef enum {
-  SELECT,
-  INSERT,
-  CREATE,
   ALTER,
+  CREATE,
   DELETE,
+  INSERT,
+  SELECT,
 
   INTO,
 
@@ -18,6 +18,10 @@ typedef enum {
   STRING,
   INTEGER,
   REAL,
+
+  TYPE_STRING,
+  TYPE_INTEGER,
+  TYPE_REAL,
 } TokenType;
 
 #endif

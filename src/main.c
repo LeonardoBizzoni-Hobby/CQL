@@ -2,12 +2,12 @@
 #include <stdlib.h>
 #include <string.h>
 
-#include "main.h"
 #include "datatypes.h"
+#include "main.h"
 #include "metacommand/metacommand.h"
-#include "statements/stmt.h"
-#include "statements/parser.h"
 #include "runner/runner.h"
+#include "statements/parser.h"
+#include "statements/stmt.h"
 
 int main(void) {
   while (1) {
@@ -16,7 +16,8 @@ int main(void) {
 
     if (command[0] == '.') {
       switch (execute_metacommand(command)) {
-      case (METACOMMAND_SUCCESS): break;
+      case (METACOMMAND_SUCCESS):
+        break;
       case (METACOMMAND_UNRECOGNIZED): {
         fprintf(stderr, "Unrecognized meta-command `%s`\n", command);
       } break;
@@ -26,11 +27,28 @@ int main(void) {
 
       switch (parse_statement(&stmt, command)) {
       case (STMT_PARSE_OK): {
-	/* execute_statement(&stmt); */
-	printf("Executed.\n");
+        /* execute_statement(&stmt); */
+        /* printf("Executed.\n"); */
+        switch (stmt.type) {
+        case STMT_CREATE: {
+          printf("Create stmt found.\n");
+          for (int i = 0; i < stmt.field_size; i++) {
+            printf("\tField: `%s` of type `%s`\n",
+                   stmt.fields.create[i].name->lexeme.identifier,
+                   stmt.fields.create[i].type->lexeme.identifier);
+          }
+        } break;
+        default: {
+          printf("Something else.\n");
+        }
+        }
+      } break;
+      case (STMT_PARSE_INVALID): {
+        fprintf(stderr, "Invalid CQL statement at start of `%s`.\n", command);
       } break;
       case (STMT_PARSE_UNRECOGNIZED): {
-	fprintf(stderr, "Unrecognized CQL statement at start of `%s`.\n", command);
+        fprintf(stderr, "Unrecognized CQL statement at start of `%s`.\n",
+                command);
       } break;
       }
     }

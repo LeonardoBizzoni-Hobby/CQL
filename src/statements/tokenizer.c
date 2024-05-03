@@ -121,17 +121,40 @@ TokenType typeof_identifier(const char *lexeme) {
         }
       } break;
       case 't': {
-        if (compare_lexeme(3, 1, lexeme, "into")) {
-          return INTO;
+        switch (lexeme[3]) {
+        case 'o': {
+          if (compare_lexeme(4, 0, lexeme, "into")) {
+            return INTO;
+          }
+        } break;
+        case 'e': {
+          if (compare_lexeme(4, 3, lexeme, "integer")) {
+            return TYPE_INTEGER;
+          }
+        } break;
         }
       } break;
       }
     } break;
     }
   } break;
+  case 'r': {
+    if (compare_lexeme(1, 3, lexeme, "real")) {
+      return TYPE_REAL;
+    }
+  } break;
   case 's': {
-    if (compare_lexeme(1, 5, lexeme, "select")) {
-      return SELECT;
+    switch (lexeme[1]) {
+    case 'e': {
+      if (compare_lexeme(2, 4, lexeme, "select")) {
+        return SELECT;
+      }
+    } break;
+    case 't': {
+      if (compare_lexeme(2, 4, lexeme, "string")) {
+        return TYPE_STRING;
+      }
+    } break;
     }
   }
   }
@@ -139,7 +162,8 @@ TokenType typeof_identifier(const char *lexeme) {
   return IDENTIFIER;
 }
 
-bool compare_lexeme(u8 start, u8 ends_in, const char *found, const char *wanted) {
+bool compare_lexeme(u8 start, u8 ends_in, const char *found,
+                    const char *wanted) {
   return !strncmp(found + start, wanted + start, ends_in) &&
          found[start + ends_in] == 0;
 }

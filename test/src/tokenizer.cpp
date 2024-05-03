@@ -1,5 +1,4 @@
 #include <gtest/gtest.h>
-#include <math.h>
 
 extern "C" {
   #include <string.h>
