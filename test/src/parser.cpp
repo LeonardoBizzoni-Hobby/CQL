@@ -1,4 +1,3 @@
-#include "statements/token_type.h"
 #include <gtest/gtest.h>
 
 extern "C" {
@@ -30,6 +29,7 @@ TEST(Parsing, CreateTableWithFields) {
                         "string,field4 integer,field5 real,field6 string)";
 
   ASSERT_EQ(parse_statement(&stmt, (char *)command), STMT_PARSE_OK);
+  ASSERT_EQ(stmt.type, STMT_CREATE);
   ASSERT_TRUE(!strcmp(stmt.on_table->lexeme.identifier, "table"));
   ASSERT_EQ(stmt.field_size, 6);
 
@@ -46,4 +46,13 @@ TEST(Parsing, CreateTableWithFields) {
   ASSERT_EQ(stmt.fields.create[3].type->type, TYPE_INTEGER);
   ASSERT_EQ(stmt.fields.create[4].type->type, TYPE_REAL);
   ASSERT_EQ(stmt.fields.create[5].type->type, TYPE_STRING);
+}
+
+TEST(Parsing, DeleteTable) {
+  Statement stmt;
+  const char *command = "delete table";
+
+  ASSERT_EQ(parse_statement(&stmt, (char *)command), STMT_PARSE_OK);
+  ASSERT_EQ(stmt.type, STMT_DELETE);
+  ASSERT_TRUE(!strcmp(stmt.on_table->lexeme.identifier, "table"));
 }

@@ -23,51 +23,11 @@ StmtParseResult parse_statement(Statement *stmt, char *command) {
     } break;
     case CREATE: {
       stmt->type = STMT_CREATE;
-
-      token = get_token(&command);
-      MATCH(token, IDENTIFIER);
-      stmt->on_table = token;
-
-      MATCH(get_token(&command), LEFT_PAREN);
-
-      CreateField *fields = 0;
-      if ((token = get_token(&command)) && token->type != RIGHT_PAREN) {
-        do {
-          MATCH(token, IDENTIFIER);
-
-          Token *type = get_token(&command);
-          switch (type->type) {
-          case TYPE_INTEGER:
-          case TYPE_REAL:
-          case TYPE_STRING:
-            break;
-          default:
-            return STMT_PARSE_INVALID;
-          }
-
-          if (!fields) {
-            fields = malloc(sizeof(CreateField));
-          } else {
-            fields =
-                realloc(fields, (stmt->field_size + 1) * sizeof(CreateField));
-          }
-          fields[stmt->field_size].name = token;
-          fields[stmt->field_size++].type = type;
-
-	  token = get_token(&command);
-        } while (token->type == COMMA && (token = get_token(&command)));
-      }
-
-      MATCH(token, RIGHT_PAREN);
-
-      if (get_token(&command)) {
-        return STMT_PARSE_INVALID;
-      }
-      stmt->fields.create = fields;
+      return parse_create(stmt, &command);
     } break;
     case DELETE: {
       stmt->type = STMT_DELETE;
-
+      return parse_delete(stmt, &command);
     } break;
     case INSERT: {
       stmt->type = STMT_INSERT;
@@ -81,6 +41,66 @@ StmtParseResult parse_statement(Statement *stmt, char *command) {
       return STMT_PARSE_INVALID;
     }
     }
+  }
+
+  return STMT_PARSE_OK;
+}
+
+StmtParseResult parse_create(Statement *stmt, char **command) {
+  Token *token = get_token(command);
+  MATCH(token, IDENTIFIER);
+  stmt->on_table = token;
+
+  MATCH(get_token(command), LEFT_PAREN);
+
+  CreateField *fields = 0;
+  if ((token = get_token(command)) && token->type != RIGHT_PAREN) {
+    do {
+      MATCH(token, IDENTIFIER);
+
+      Token *type = get_token(command);
+      switch (type->type) {
+      case TYPE_INTEGER:
+      case TYPE_REAL:
+      case TYPE_STRING:
+        break;
+      default:
+        return STMT_PARSE_INVALID;
+      }
+
+      if (!fields) {
+        fields = malloc(sizeof(CreateField));
+      } else {
+        fields = realloc(fields, (stmt->field_size + 1) * sizeof(CreateField));
+      }
+      fields[stmt->field_size].name = token;
+      fields[stmt->field_size++].type = type;
+
+      token = get_token(command);
+    } while (token->type == COMMA && (token = get_token(command)));
+  }
+
+  MATCH(token, RIGHT_PAREN);
+
+  /* There should be no other token after the `)` */
+  if (get_token(command)) {
+    return STMT_PARSE_INVALID;
+  }
+  stmt->fields.create = fields;
+
+  return STMT_PARSE_OK;
+}
+
+StmtParseResult parse_delete(Statement *stmt, char **command) {
+  printf("Delete stmt found.\n");
+  Token *token = get_token(command);
+  MATCH(token, IDENTIFIER);
+  stmt->on_table = token;
+  printf("Table name to delete found.\n");
+
+  /* There should be no other token after the table name */
+  if (get_token(command)) {
+    return STMT_PARSE_INVALID;
   }
 
   return STMT_PARSE_OK;

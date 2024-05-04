@@ -11,4 +11,7 @@ typedef enum {
 
 StmtParseResult parse_statement(Statement *, char *);
 
+StmtParseResult parse_create(Statement *, char **);
+StmtParseResult parse_delete(Statement *, char **);
+
 #endif
