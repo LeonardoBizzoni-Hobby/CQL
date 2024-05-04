@@ -17,12 +17,17 @@ typedef struct {
 } CreateField;
 
 typedef struct {
+  Token *value;
+} InsertField;
+
+typedef struct {
   StatementType type;
   Token *on_table;
   u8 field_size;
 
   union {
     CreateField *create;
+    InsertField *insert;
   } fields;
 } Statement;
 

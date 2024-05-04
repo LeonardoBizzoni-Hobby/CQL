@@ -9,7 +9,7 @@
 #include "tokenizer.h"
 
 #define MATCH(token, expected_type)                                            \
-  if (token->type != expected_type) {                                          \
+  if (!token || token->type != expected_type) {                                \
     return STMT_PARSE_INVALID;                                                 \
   }
 
@@ -31,7 +31,7 @@ StmtParseResult parse_statement(Statement *stmt, char *command) {
     } break;
     case INSERT: {
       stmt->type = STMT_INSERT;
-
+      return parse_insert(stmt, &command);
     } break;
     case SELECT: {
       stmt->type = STMT_SELECT;
@@ -51,7 +51,8 @@ StmtParseResult parse_create(Statement *stmt, char **command) {
   MATCH(token, IDENTIFIER);
   stmt->on_table = token;
 
-  MATCH(get_token(command), LEFT_PAREN);
+  token = get_token(command);
+  MATCH(token, LEFT_PAREN);
 
   CreateField *fields = 0;
   if ((token = get_token(command)) && token->type != RIGHT_PAREN) {
@@ -92,16 +93,59 @@ StmtParseResult parse_create(Statement *stmt, char **command) {
 }
 
 StmtParseResult parse_delete(Statement *stmt, char **command) {
-  printf("Delete stmt found.\n");
   Token *token = get_token(command);
   MATCH(token, IDENTIFIER);
   stmt->on_table = token;
-  printf("Table name to delete found.\n");
 
   /* There should be no other token after the table name */
   if (get_token(command)) {
     return STMT_PARSE_INVALID;
   }
 
+  return STMT_PARSE_OK;
+}
+
+StmtParseResult parse_insert(Statement *stmt, char **command) {
+  Token *token = 0;
+  InsertField *values = 0;
+
+  token = get_token(command);
+  MATCH(token, LEFT_PAREN);
+  token = get_token(command);
+
+  do {
+    switch (token->type) {
+    case INTEGER:
+    case REAL:
+    case STRING:
+      break;
+    default:
+      return STMT_PARSE_INVALID;
+    }
+
+    if (!values) {
+      values = malloc(sizeof(InsertField));
+    } else {
+      values = realloc(values, (stmt->field_size + 1) * sizeof(InsertField));
+    }
+    values[stmt->field_size++].value = token;
+
+    token = get_token(command);
+  } while (token->type == COMMA && (token = get_token(command)));
+  stmt->fields.insert = values;
+
+  MATCH(token, RIGHT_PAREN);
+
+  token = get_token(command);
+  MATCH(token, INTO);
+
+  token = get_token(command);
+  MATCH(token, IDENTIFIER);
+  stmt->on_table = token;
+
+  /* There should be no other token after the table name */
+  if (get_token(command)) {
+    return STMT_PARSE_INVALID;
+  }
   return STMT_PARSE_OK;
 }

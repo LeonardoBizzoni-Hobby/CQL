@@ -63,3 +63,40 @@ TEST(Parsing, DeleteWithoutTableName) {
 
   ASSERT_EQ(parse_statement(&stmt, (char *)command), STMT_PARSE_INVALID);
 }
+
+TEST(Parsing, InsertValuesIntoTable) {
+  Statement stmt;
+  stmt.field_size = 0;
+  const char *command = "insert (2.3, 42, \"Saber >> Rin\") into table_name";
+
+  ASSERT_EQ(parse_statement(&stmt, (char *)command), STMT_PARSE_OK);
+  ASSERT_EQ(stmt.type, STMT_INSERT);
+  ASSERT_EQ(stmt.field_size, 3);
+  ASSERT_TRUE(!strcmp(stmt.on_table->lexeme.identifier, "table_name"));
+
+  ASSERT_EQ(stmt.fields.insert[0].value->lexeme.real, 2.3);
+  ASSERT_EQ(stmt.fields.insert[1].value->lexeme.integer, 42);
+  ASSERT_TRUE(!strcmp(stmt.fields.insert[2].value->lexeme.str, "Saber >> Rin"));
+}
+
+TEST(Parsing, InsertWithoutValues) {
+  Statement stmt;
+  stmt.field_size = 0;
+  const char *command = "insert () into table_name";
+
+  ASSERT_EQ(parse_statement(&stmt, (char *)command), STMT_PARSE_INVALID);
+}
+
+TEST(Parsing, InsertValuesWithoutTable) {
+  Statement stmt;
+  stmt.field_size = 0;
+  const char *command = "insert (2.3, 42, \"Saber >> Rin\")";
+
+  ASSERT_EQ(parse_statement(&stmt, (char *)command), STMT_PARSE_INVALID);
+  ASSERT_EQ(stmt.type, STMT_INSERT);
+  ASSERT_EQ(stmt.field_size, 3);
+
+  ASSERT_EQ(stmt.fields.insert[0].value->lexeme.real, 2.3);
+  ASSERT_EQ(stmt.fields.insert[1].value->lexeme.integer, 42);
+  ASSERT_TRUE(!strcmp(stmt.fields.insert[2].value->lexeme.str, "Saber >> Rin"));
+}

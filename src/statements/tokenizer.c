@@ -29,7 +29,6 @@ Token *get_token(char **command) {
     case '"': {
       u64 curr = start;
       while ((*command)[curr] != 0 && (*command)[curr] != '"') {
-        printf("%i - %c\n", (*command)[curr], (*command)[curr]);
         advance(&curr, *command);
       }
 
