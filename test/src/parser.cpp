@@ -56,3 +56,10 @@ TEST(Parsing, DeleteTable) {
   ASSERT_EQ(stmt.type, STMT_DELETE);
   ASSERT_TRUE(!strcmp(stmt.on_table->lexeme.identifier, "table"));
 }
+
+TEST(Parsing, DeleteWithoutTableName) {
+  Statement stmt;
+  const char *command = "delete create";
+
+  ASSERT_EQ(parse_statement(&stmt, (char *)command), STMT_PARSE_INVALID);
+}
