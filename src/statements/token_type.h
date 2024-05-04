@@ -9,6 +9,8 @@ typedef enum {
   SELECT,
 
   INTO,
+  FROM,
+  WHERE,
 
   LEFT_PAREN,
   RIGHT_PAREN,

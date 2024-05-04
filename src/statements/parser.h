@@ -14,5 +14,6 @@ StmtParseResult parse_statement(Statement *, char *);
 StmtParseResult parse_create(Statement *, char **);
 StmtParseResult parse_delete(Statement *, char **);
 StmtParseResult parse_insert(Statement *, char **);
+StmtParseResult parse_select(Statement *, char **);
 
 #endif

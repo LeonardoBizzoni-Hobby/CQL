@@ -108,3 +108,15 @@ TEST(Tokenizer, KeywordRecognition) {
   ASSERT_EQ(found->type, SELECT);
   ASSERT_TRUE(!strcmp(found->lexeme.identifier, "select"));
 }
+
+TEST(Tokenizer, MoreKeywordRecognition) {
+  const char *command = "from where";
+  Token *found = get_token((char **)&command);
+
+  ASSERT_EQ(found->type, FROM);
+  ASSERT_TRUE(!strcmp(found->lexeme.identifier, "from"));
+
+  found = get_token((char **)&command);
+  ASSERT_EQ(found->type, WHERE);
+  ASSERT_TRUE(!strcmp(found->lexeme.identifier, "where"));
+}

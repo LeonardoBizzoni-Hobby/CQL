@@ -35,7 +35,7 @@ StmtParseResult parse_statement(Statement *stmt, char *command) {
     } break;
     case SELECT: {
       stmt->type = STMT_SELECT;
-
+      return parse_select(stmt, &command);
     } break;
     default: {
       return STMT_PARSE_INVALID;
@@ -147,5 +147,9 @@ StmtParseResult parse_insert(Statement *stmt, char **command) {
   if (get_token(command)) {
     return STMT_PARSE_INVALID;
   }
+  return STMT_PARSE_OK;
+}
+
+StmtParseResult parse_select(Statement *stmt, char **command) {
   return STMT_PARSE_OK;
 }

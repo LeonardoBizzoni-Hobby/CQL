@@ -110,6 +110,11 @@ TokenType typeof_identifier(const char *lexeme) {
       return DELETE;
     }
   } break;
+  case 'f': {
+    if (compare_lexeme(1, 3, lexeme, "from")) {
+      return FROM;
+    }
+  } break;
   case 'i': {
     switch (lexeme[1]) {
     case 'n': {
@@ -155,7 +160,12 @@ TokenType typeof_identifier(const char *lexeme) {
       }
     } break;
     }
-  }
+  } break;
+  case 'w': {
+    if (compare_lexeme(1, 4, lexeme, "where")) {
+      return WHERE;
+    }
+  } break;
   }
 
   return IDENTIFIER;
